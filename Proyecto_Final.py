@@ -4,7 +4,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Cargar archivo CSV
+######################################################################################################
+############################# Carga de archivo CSV #####################################################
+
 Datos_P = pd.read_csv(r"C:\Users\Admin\Downloads\Python\Datos_Cobertura Movil.csv", sep=';', encoding="utf-8")
 print(Datos_P.head()) # Ver las primeras 5 filas
 print(Datos_P.tail()) # Ver las últimas 5 filas
@@ -13,6 +15,9 @@ print(Datos_P.columns) # Ver los nombres de las columnas
 print(Datos_P.info()) # Resumen del tipo de datos
 print(Datos_P[["NIVEL_SENAL", "AREA_COB_CLARO", "AREA_COB_MOVISTAR", "AREA_COB_TIGO", "AREA_COB_WOM"]].describe())
 # Estadísticas descriptivas numéricas
+
+######################################################################################################
+############################ Depuración de base de datos #############################################
 
 # Eliminar ID_DEPARTAMENTO - ID_MUNICIPO - ID_CPOB
 Datos_P.drop(columns=['ID_DEPARTAMENTO', "ID_MUNICIPIO", "ID_CPOB"], inplace=True)
@@ -29,7 +34,9 @@ for col in columnas:
 # Guardar el archivo sobrescribiéndolo
 Datos_P.to_csv(r"C:\Users\Admin\Downloads\Python\Datos_Cobertura Movil_2.csv", index=False, encoding="utf-8")
 
-#
+##############################################################################
+########### Tabulación y estadística descriptiva #############################
+
 print("DATOS PARA EL ANÁLISIS")
 print(Datos_P.head()) # Ver las primeras 5 filas
 print(Datos_P.tail()) # Ver las últimas 5 filas
@@ -262,7 +269,7 @@ peores5_senal = senal_tecno_dpto.sum(axis=1).nsmallest(5)
 # Filtrar solo las anterires
 senal_tecno_dpto_selec = senal_tecno_dpto.loc[mejores5_senal.index.union(peores5_senal.index)]
 # Gráfico Heatmap
-sns.heatmap(senal_tecno_dpto_selec, cmap="Spectral", annot=True, fmt=".0f", cbar_kws={'label': 'Nivel de Señal'})
+sns.heatmap(senal_tecno_dpto_selec, cmap="Spectral", annot=True, fmt=".0f", cbar_kws={'label': 'Nivel de Señal [dBm]'})
 plt.title("Nivel de Señal por Tecnología y Departamento")
 plt.xlabel("Tecnología")
 plt.ylabel("Departamento")
@@ -279,36 +286,3 @@ plt.ylabel("")
 plt.tight_layout()
 plt.show()
 
-"""
-#### Mirar si si es necesaria
-# Plot stacked bar chart -- Sorted
-# Ordenar las columnas (tecnologías) por la sumatoria total ascendente
-Tabla8_bivariada = Tabla8_bivariada.loc[:, Tabla8_bivariada.sum().sort_values().index]
-                                        
-Tabla8_bivariada.plot(kind='bar', stacked=False, figsize=(14,8))
-plt.xlabel('Departamento')
-plt.ylabel('Sumatoria NIVEL_SENAL')
-plt.title('Sumatoria de NIVEL_SENAL por Tecnología y Departamento')
-plt.legend(title='Tecnología')
-plt.tight_layout()
-plt.show()
-
-####
-# Crear una copia de las columnas relevantes
-datos_areas = Datos_P[["ANNO", "AREA_COB_CLARO", "AREA_COB_MOVISTAR", "AREA_COB_TIGO", "AREA_COB_WOM"]]
-# Reemplazar los valores 0 con NaN para que no sean considerados en el promedio
-datos_areas = datos_areas.replace(0, np.nan)
-# Agrupar años y calcular el promedio ignorando valores NaN
-anno_cobertura = datos_areas.groupby("ANNO")[["AREA_COB_CLARO", "AREA_COB_MOVISTAR", "AREA_COB_TIGO", "AREA_COB_WOM"]].mean()
-# Seleccionar los 5 mejores y 5 peores años según la cobertura promedio total
-anno_cobertura_selec = anno_cobertura.loc[anno_cobertura.mean(axis=1).nlargest(5).index.union(anno_cobertura.mean(axis=1).nsmallest(5).index)]
-# Gráfico de líneas
-anno_cobertura_selec.plot(kind="line", marker="o")
-plt.title("Cobertura Promedio por Operador por Año (Excluyendo Valores Igual a 0)")
-plt.ylabel("Cobertura Promedio (Km^2)")
-plt.xlabel("Año")
-plt.legend(title="Operadores")
-plt.tight_layout()
-plt.show()
-
-"""
